@@ -10,6 +10,7 @@ import (
 	"github.com/xeeynamo/sotn-decomp/tools/sotn-assets/util"
 	"io"
 	"path/filepath"
+	"strings"
 )
 
 const entryCount = 53 // the number seems to be fixed
@@ -31,7 +32,12 @@ func (h *handler) Extract(e assets.ExtractArgs) error {
 }
 
 func (h *handler) Build(e assets.BuildArgs) error {
-	return buildEntityLayouts(assetPath(e.AssetDir, e.Name), e.SrcDir, e.OvlName)
+	subDir := ""
+	dirSplit := strings.Split(e.Name, "/")
+	if len(dirSplit) > 1 {
+		subDir = strings.Join(dirSplit[:len(dirSplit)-1], "/") // Allow for version specific layouts is subdirectories
+	}
+	return buildEntityLayouts(assetPath(e.AssetDir, e.Name), e.SrcDir, subDir, e.OvlName)
 }
 
 func assetPath(dir, name string) string {

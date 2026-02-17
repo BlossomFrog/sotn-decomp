@@ -42,7 +42,7 @@ segments:
       - [0x8C, .data, header] # palette definitions
       - [0x1D0, .data, header] # layers
       - [0x558, .data, header] # graphics banks
-      - [0x728, .data, gen/e_laydef] # layout entries header
+      - [0x728, .data, gen/hd/e_laydef] # layout entries header
       - [0x8D0, .data, e_init]
       - [0xBD4, .data, background_block_init]
       - [0xD78, .data, e_red_door_tiles]
@@ -81,7 +81,7 @@ segments:
       - [0x2EF8, .data, gurkha]
       - [0x33E8, .data, blade]
       - [0x3A80, .data, gen/rooms]
-      - [0x3B6C, .data, gen/e_layout] # layout entries data (One layout less than US version)
+      - [0x3B6C, .data, gen/hd/e_layout] # layout entries data (lacks entry found at index 46 in the US version)
       - [0x49CC, .data, stage_data]
       - [0x2A110, .data, gen/sprites]
       - [0x31E8C, .rodata, e_castle_door]

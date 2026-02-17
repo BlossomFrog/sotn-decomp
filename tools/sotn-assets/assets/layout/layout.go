@@ -174,7 +174,7 @@ func readEntityLayout(r io.ReadSeeker, ovlName string, off, baseAddr psx.Addr, c
 	}
 }
 
-func buildEntityLayouts(fileName, outputDir, ovlName string) error {
+func buildEntityLayouts(fileName, outputDir, subDir string, ovlName string) error {
 	writeLayoutEntries := func(sb *strings.Builder, banks [][]layoutEntry, align4 bool) error {
 		nWritten := 0
 		for i, entries := range banks {
@@ -273,8 +273,13 @@ func buildEntityLayouts(fileName, outputDir, ovlName string) error {
 	}
 	sbHeader.WriteString(fmt.Sprintf("};\n"))
 
+	relOvlDir := "../"
+	if subDir != "" {
+		depth := len(strings.Split(subDir, "/"))
+		relOvlDir += strings.Repeat("../", depth) // navigate further back if using subdirectories
+	}
 	sbData := strings.Builder{}
-	sbData.WriteString(fmt.Sprintf("#include \"../%s.h\"\n\n", ovlName))
+	sbData.WriteString(fmt.Sprintf("#include \"%s%s.h\"\n\n", relOvlDir, ovlName))
 	sbData.WriteString("// clang-format off\n")
 	sbData.WriteString(fmt.Sprintf("u16 %s_x[] = {\n", symbolName))
 	if err := writeLayoutEntries(&sbData, makeSortedBanks(el.Entities, true), false); err != nil {
@@ -287,8 +292,8 @@ func buildEntityLayouts(fileName, outputDir, ovlName string) error {
 	}
 	sbData.WriteString(fmt.Sprintf("};\n"))
 
-	if err := util.WriteFile(filepath.Join(outputDir, "gen/e_layout.c"), []byte(sbData.String())); err != nil {
+	if err := util.WriteFile(filepath.Join(outputDir, "gen", subDir, "e_layout.c"), []byte(sbData.String())); err != nil {
 		return err
 	}
-	return util.WriteFile(filepath.Join(outputDir, "gen/e_laydef.c"), []byte(sbHeader.String()))
+	return util.WriteFile(filepath.Join(outputDir, "gen", subDir, "e_laydef.c"), []byte(sbHeader.String()))
 }

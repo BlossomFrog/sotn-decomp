@@ -32,10 +32,11 @@ func (h *handler) Extract(e assets.ExtractArgs) error {
 }
 
 func (h *handler) Build(e assets.BuildArgs) error {
+	// If the layout is version specific, get the version name from e.Name
+	// Note: sotn.GetVersion() is not used in case VERSION=""
 	subDir := ""
-	dirSplit := strings.Split(e.Name, "/")
-	if len(dirSplit) > 1 {
-		subDir = strings.Join(dirSplit[:len(dirSplit)-1], "/") // Allow for version specific layouts is subdirectories
+	if e.Name != "entity_layouts" {
+		subDir = strings.TrimSuffix(e.Name, "/entity_layouts")
 	}
 	return buildEntityLayouts(assetPath(e.AssetDir, e.Name), e.SrcDir, subDir, e.OvlName)
 }

@@ -256,6 +256,12 @@ func buildEntityLayouts(fileName, outputDir, subDir string, ovlName string) erro
 		offsetCur += len(el.Entities[i]) * 5
 	}
 
+	ovlHeaderLoc := fmt.Sprintf("../%s.h", ovlName)
+	if subDir != "" {
+		// Look back further if in version specific subdirectory
+		ovlHeaderLoc = "../" + ovlHeaderLoc
+	}
+
 	sbHeader := strings.Builder{}
 	sbHeader.WriteString("#include <stage.h>\n\n")
 	sbHeader.WriteString("#include \"common.h\"\n\n")
@@ -273,13 +279,8 @@ func buildEntityLayouts(fileName, outputDir, subDir string, ovlName string) erro
 	}
 	sbHeader.WriteString(fmt.Sprintf("};\n"))
 
-	relOvlDir := "../"
-	if subDir != "" {
-		depth := len(strings.Split(subDir, "/"))
-		relOvlDir += strings.Repeat("../", depth) // navigate further back if using subdirectories
-	}
 	sbData := strings.Builder{}
-	sbData.WriteString(fmt.Sprintf("#include \"%s%s.h\"\n\n", relOvlDir, ovlName))
+	sbData.WriteString(fmt.Sprintf("#include \"%s\"\n\n", ovlHeaderLoc))
 	sbData.WriteString("// clang-format off\n")
 	sbData.WriteString(fmt.Sprintf("u16 %s_x[] = {\n", symbolName))
 	if err := writeLayoutEntries(&sbData, makeSortedBanks(el.Entities, true), false); err != nil {
